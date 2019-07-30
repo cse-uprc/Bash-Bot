@@ -8,26 +8,11 @@ with open('keys.json') as json_file:
     data = json.load(json_file)
     TOKEN = data['discordKey']
 
-client = discord.Client()
+client = commands.Bot(command_prefix = '!')
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        # we do not want the bot to reply to itself
-        return
-
-    if message.content.startswith('!hello'):
-        msg = 'Hello {0.author.mention}'.format(message)
-        await message.channel.send(msg)
-
-    elif message.content.startswith('!download'):
-        attachment = message.attachments[0]
-        buffer = io.BytesIO()
-        await attachment.save(buffer)
-        f = open(attachment.filename,'wb')
-        f.close()
-        msg = 'Attachment Downloaded'
-        await message.channel.send(msg)
+#####################
+# Events
+#####################
 
 @client.event
 async def on_ready():
@@ -35,5 +20,36 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
+
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        # we do not want the bot to reply to itself
+        return
+    # Make it clear that we can add things later, but do not wish to currently.
+    pass
+
+#####################
+# Commands
+#####################
+        
+@client.command()
+    async def download(message):
+        attachment = message.attachments[0]
+        buffer = io.BytesIO()
+        await attachment.save(buffer)
+        f = open(attachment.filename,'wb')
+        f.close()
+        msg = 'Attachment Downloaded'
+        await message.channel.send(msg)
+        
+@client.command()
+    async def hello(message):
+        msg = 'Hello {0.author.mention}'.format(ctx.message)
+        await message.channel.send(msg)
+        
+#####################
+# Global
+#####################
 
 client.run(TOKEN)
