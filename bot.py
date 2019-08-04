@@ -3,7 +3,7 @@ import discord
 import json
 import io
 import os
-import logging
+import logger
 from discord.ext import commands
 from discord import File
 
@@ -11,7 +11,7 @@ with open('keys.json') as json_file:
     data = json.load(json_file)
     TOKEN = data['discordKey']
 
-#logging.basicConfig(filename='app.log', filemode='w', )
+logger = logger.Logger('app.log')
 
 client = commands.Bot(command_prefix = '!')
 
@@ -33,16 +33,16 @@ async def on_ready():
 
 @client.command(name='download')
 async def download(ctx, *args:str):
-    print('called download')
+    logger.log('called download')
     attachment = ctx.message.attachments[0]
-	buffer = io.BytesIO()
+    buffer = io.BytesIO()
     await attachment.save(buffer)
     try:
         if len(args)>0:
             filePath = args[0]
         else:
             filePath = attachment.filename
-        print('Filepath defined: {0}'.format(filePath))
+        logger.log('Filepath defined: {0}'.format(filePath))
 
         with open(filePath, 'wb') as f:
             bufferSize=16384
@@ -51,31 +51,34 @@ async def download(ctx, *args:str):
                 if not buf:
                     break
                 f.write(buf)
-        print('File Downloaded: {0}'.format(filePath))
+        logger.log('File Downloaded: {0}'.format(filePath))
         msg = 'Attachment Downloaded'
     
-    except:
+    except Exception as e:
+        logger.log('Download Failed - {}'.format(str(e)))
         msg = 'Download Fail'
-
+     
     await ctx.send(msg)
 
 @client.command(name='upload')
 async def upload(ctx, *args:str):
-    print('called upload')
+    logger.log('called upload')
     try:
         filePath = args[0]
-        print('Filepath defined: {0}'.format(filePath))
+        logger.log('Filepath defined: {0}'.format(filePath))
         with open(filePath,'rb') as f:
             await ctx.send(file=File(f,filePath))
-        print("Upload successful: {0}".format(filePath))
-    except:
+        logger.log("Upload successful: {0}".format(filePath))
+    except Exception as e:
         await ctx.send('Upload Fail')
-        print("Upload Fail")
+        logger.log("Upload Fail {0}".format(str(e)))
     
 @client.command(name='hello')
 async def hello(ctx):
+    logger.log('called hello')
     msg = 'Hello {0.author.mention}'.format(ctx)
-     
+    await ctx.send(msg)
+    
 #####################
 # Global
 #####################
