@@ -70,8 +70,9 @@ async def upload(ctx, *args:str):
             await ctx.send(file=File(f,filePath))
         logger.log("Upload successful: {0}".format(filePath))
     except Exception as e:
+        errorMessage = str(e)
         await ctx.send('Upload Fail')
-        logger.log("Upload Fail {0}".format(str(e)))
+        logger.log("Upload Fail {0}".format(errorMessage))
     
 @client.command(name='hello')
 async def hello(ctx):
@@ -79,6 +80,11 @@ async def hello(ctx):
     msg = 'Hello {0.author.mention}'.format(ctx)
     await ctx.send(msg)
     
+@client.command(name='ping')
+async def ping(ctx):
+    logger.log('called ping')
+    await ctx.send("Pong!")
+
 #####################
 # Global
 #####################
