@@ -1,8 +1,5 @@
 import subprocess
 
-# DEBUG INFO:
-# The test code currently produces an error: "TypeError: a bytes-like object is required, not 'str'"
-
 # Class to represent an instance of a terminal which is initiated
 # by a discord user via the discord bot
 class Terminal:
@@ -21,7 +18,7 @@ class Terminal:
             stdin = subprocess.PIPE,
             stdout = subprocess.PIPE,
             stderr = subprocess.PIPE,
-            shell = True
+            shell = True,
         )
     
     # Execute a bash terminal command (passed as an argument to the function) on the
@@ -31,9 +28,9 @@ class Terminal:
         out, err = self.terminalInstance.communicate(command)
 
         # String to output to user who executed the BASH command
-        return ("The command '" + command + "' was executed in terminal '" + self.name + "'"
-      + "The terminal returned the output: '" + commandReturnObject.stdout.readlines().encode('utf-8') + "'"
-      + "If there was an error message, it reads: '" + commandReturnObject.stderr_data + "'")
+        return ("The command '" + command + "' was executed in terminal '" + self.name + "'.\n\n"
+      + "The terminal returned the output:\n'" + out + "'.\n\n"
+      + "If there was an error message, it reads: '" + err + "'.\n")
 
 # TEST CODE (for windows):
 # testTerminal = Terminal("test-terminal", "cmd.exe")
