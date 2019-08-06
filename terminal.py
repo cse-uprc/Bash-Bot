@@ -28,11 +28,19 @@ class Terminal:
         # variables "outputString" and "errorString", respectively
         outputString, errorString = self.terminalInstance.communicate(command)
 
-        # String to output to user who executed the BASH command
-        return ("The command '" + command + "' was executed in terminal '" + self.name + "'.\n\n"
-      + "The terminal returned the output:\n'" + outputString + "'.\n\n"
-      + "If there was an error message, it reads: '" + errorString + "'.\n")
+        # Object containing data returned by the terminal after the command was executed
+        return ({
+            'terminalName': self.name,
+            'executedCommand': command,
+            'outputString': outputString,
+            'errorString': errorString
+        })
 
-# TEST CODE (for windows):
+# ~~~~~~~~~~~~~~~~ TEST CODE (for windows) ~~~~~~~~~~~~~~~~
+
 # testTerminal = Terminal("test-terminal", "cmd.exe")
-# print(testTerminal.executeCommand("dir"))
+# terminalOutput = testTerminal.executeCommand("dir")
+# print("The command '" + terminalOutput['executedCommand'] + "' was executed in terminal '"
+#      + terminalOutput['terminalName'] + "'.\n\n" + "The terminal returned the output:\n'"
+#      + terminalOutput['outputString'] + "'.\n\n" + "If there was an error message, it reads: '"
+#      + terminalOutput['errorString'] + "'.\n")
