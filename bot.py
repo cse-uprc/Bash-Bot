@@ -13,7 +13,24 @@ with open('keys.json') as json_file:
 
 logger = logger.Logger('app.log')
 
+
 client = commands.Bot(command_prefix = '!')
+
+####################
+# Helper methods
+####################
+
+def remove_command_prefix(operand: str):
+    newOperand = operand[len(client.command_prefix):len(operand)]
+    return newOperand
+
+def parse_command(messageContent: str):
+    splitMessage = messageContent.split(' ')
+    command = remove_command_prefix(splitMessage[0])
+    operands = ""
+    if len(splitMessage) > 1:
+        operands = splitMessage[1:len(splitMessage)]
+    return [command, operands]
 
 #####################
 # Events
@@ -27,13 +44,24 @@ async def on_ready():
     print('------')
 
 
+@client.event
+async def on_command(ctx):
+    splitMessage = parse_command(ctx.message.content)
+    command = splitMessage[0]
+    operands = splitMessage[1]
+
+    userAction = "{0.author} calls {1}".format(ctx, command)
+    if len(operands) > 0:
+        userAction = '{0}\n\t\t"{1}"'.format(userAction, ' '.join(operands))
+
+    logger.log(userAction)
+
 #####################
 # Commands
 #####################
 
 @client.command(name='download')
 async def download(ctx, *args:str):
-    logger.log('called download')
     attachment = ctx.message.attachments[0]
     buffer = io.BytesIO()
     await attachment.save(buffer)
@@ -62,7 +90,6 @@ async def download(ctx, *args:str):
 
 @client.command(name='upload')
 async def upload(ctx, *args:str):
-    logger.log('called upload')
     try:
         filePath = args[0]
         logger.log('Filepath defined: {0}'.format(filePath))
@@ -76,14 +103,17 @@ async def upload(ctx, *args:str):
     
 @client.command(name='hello')
 async def hello(ctx):
-    logger.log('called hello')
     msg = 'Hello {0.author.mention}'.format(ctx)
     await ctx.send(msg)
     
 @client.command(name='ping')
 async def ping(ctx):
-    logger.log('called ping')
     await ctx.send("Pong!")
+
+@client.command(name='shutdown')
+async def shutdown(ctx):
+    await ctx.send("Shutting down...")
+    await client.logout() 
 
 #####################
 # Global
