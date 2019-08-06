@@ -7,7 +7,7 @@ class Logger:
 
     def log(self, msg):
         # log a message in the log file
-        logMessage = '{0} - {1}\n'.format(str(datetime.datetime.now()), msg)
+        logMessage = '{0} - {1}'.format(str(datetime.datetime.now()), msg)
         with open(self.filePath, 'a+') as f:
-            f.write(logMessage)
+            f.write(logMessage + "\n")
         print(logMessage)
