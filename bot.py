@@ -4,6 +4,7 @@ import json
 import io
 import os
 import logger
+import terminal
 import socket
 import sys
 from discord.ext import commands
@@ -88,7 +89,7 @@ async def download(ctx, *args:str):
             filePath = args[0]
         else:
             filePath = attachment.filename
-        logger.log('Filepath defined: {0}'.format(filePath))
+            logger.log('Filepath defined: {0}'.format(filePath))
 
         with open(filePath, 'wb') as f:
             bufferSize=16384
@@ -124,6 +125,55 @@ async def upload(ctx, *args:str):
         await ctx.send('Upload Fail')
         logger.log("Upload Fail {0}".format(errorMessage))
     
+# CREATE testTerminal for the bash and cwd commands
+testTerminal = terminal.Terminal('test1','/bin/bash')
+
+@client.command(name="bash")
+async def upload(ctx, *args:str):
+    # Receive a bash command from the discord chat and run in on the appropriate bot instance
+    try:
+        # Turn the tuple of args into a single string
+        argsString = " ".join(args)
+        
+        # Ensure nothing extremely dangerous was attempted
+        if "sudo" in argsString:
+            raise Exception("CANNOT EXECUTE SUPER USER COMMANDS")
+
+        # Run and Log the command
+        output = testTerminal.executeCommand(argsString)
+        logger.log("Command executed {0}".format(argsString))
+
+        msg = ("Terminal: {0} \n".format(output["terminalName"]) +
+            "Current Dir: {0} \n".format(output["currentDirectory"]) +
+            "Output: {0} \n".format(output["outputString"]) +
+            "Error: {0} \n".format(output["errorString"]))
+        logger.log(msg)
+        await ctx.send(msg)
+    except Exception as e:
+        # If an exception occured it should be logged and posted to discord
+        errorMessage = str(e)    
+        msg = "Command Failed {0}".format(errorMessage)
+        logger.log(msg)
+        await ctx.send(msg)
+
+@client.command(name="cwd")
+async def changeWorkingDirectory(ctx, *args:str):
+    # Change the working directory of the terminal
+    try:
+        # The file path should be the first and only argument
+        filePath = args[0]
+        logger.log("Directory specified {0}".format(filePath))
+        # Set the currentDirectory of the terminal instance
+        testTerminal.currentDirectory = filePath
+        msg = "Terminal Directory set!"
+        logger.log(msg)
+        await ctx.send(msg)
+    except Exception as e:
+        errorMessage = str(e)
+        msg = "Changing Directory Failed {0}".format(errorMessage)
+        logger.log(msg)
+        await ctx.send(msg)
+
 @client.command(name='hello')
 async def hello(ctx):
     # Clarifies that the command system is successfully implemented and mentions the user while saying hello.

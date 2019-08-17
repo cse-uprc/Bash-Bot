@@ -7,7 +7,7 @@ from pathlib import Path
 class Terminal:
 
     # Object constructor
-    def __init__(self, name, terminalPath):
+    def __init__(self, name, terminalPath, directoryPath=str(Path.home())):
         # The name of the terminal instance (supplied by the user)
         self.name = name
 
@@ -15,29 +15,25 @@ class Terminal:
         self.terminalPath = terminalPath
         
         # The current working directory that the user is in (starts in the home directory)
-        self.currentDirectory = str(Path.home())
+        self.currentDirectory = directoryPath
     
     # Execute a bash terminal command (passed as an argument to the function) on the
     # machine running the bot. Returns a string message which can be displayed for the user.
     def executeCommand(self, command):
+        # Create a Popen object which will take in the command and the working
+        #   directory and run the command when communicate is called
+        self.terminalInstance = subprocess.Popen([command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell = True, cwd = self.currentDirectory)
         
-        # Use the correct path-separator for the operating system
-        directorySeparator = os.sep
-
-        # Execute a shell-terminal command and store the "stdout" and "stderr" output in the
-        # variables "outputString" and "errorString", respectively
-        commandReturnObject = subprocess.run(
-            self.currentDirectory + directorySeparator + command,
-            shell = True,
-            capture_output = True
-        )
-
+        # Use communicate to run the command and get the bytes-like objects as output/error
+        stdout, stderr = self.terminalInstance.communicate()
+        
         # Object containing data returned by the terminal after the command was executed
         return ({
             'terminalName': self.name,
+            'currentDirectory': self.currentDirectory,
             'executedCommand': command,
-            'outputString': commandReturnObject.stdout.decode('utf-8'),
-            'errorString': commandReturnObject.stderr.decode('utf-8')
+            'outputString': stdout.decode('utf-8'),
+            'errorString': stderr.decode('utf-8')
         })
 
 # ~~~~~~~~~~~~~~~~ TEST CODE (for windows) ~~~~~~~~~~~~~~~~
