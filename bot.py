@@ -4,6 +4,8 @@ import json
 import io
 import os
 import logger
+import socket
+import sys
 from discord.ext import commands
 from discord import File
 
@@ -134,6 +136,26 @@ async def shutdown(ctx):
     await ctx.send("Shutting down...")
     logger.log("{0.user.name} has logged out.".format(client))
     await client.logout()
+
+
+	
+# The following segment of code was written by @TheToiletTyrant (316thebrains)
+
+#############################################################
+# This code has been QUARENTINED due to it's infinite loops #
+#############################################################
+# @client.command(name='ping')                              #
+# async def pingCmd(ctx):                                   #
+#    s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)    #
+#     server_ip = ("discordapp.com")                        #
+#     rep = os.system("ping " + server_ip)                  #
+#                                                           #
+#     ctx.send(rep)                                         #
+#############################################################
+#          ping command (needs to be worked on)             #
+#############################################################
+
+
 
 #####################
 # Global
