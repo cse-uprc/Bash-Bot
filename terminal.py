@@ -2,12 +2,14 @@ import subprocess
 import os
 from pathlib import Path
 
-# Class to represent an instance of a terminal which is initiated
-# by a discord user via the discord bot
-class Terminal:
 
-    # Object constructor
+class Terminal:
+    # Class to represent an instance of a terminal which is initiated
+    # by a discord user via the discord bot
+
     def __init__(self, name, terminalPath, directoryPath=str(Path.home())):
+        # Object constructor
+
         # The name of the terminal instance (supplied by the user)
         self.name = name
 
@@ -17,9 +19,11 @@ class Terminal:
         # The current working directory that the user is in (starts in the home directory)
         self.currentDirectory = directoryPath
     
+
+    def executeCommand(self, command):
     # Execute a bash terminal command (passed as an argument to the function) on the
     # machine running the bot. Returns a string message which can be displayed for the user.
-    def executeCommand(self, command):
+
         # Create a Popen object which will take in the command and the working
         #   directory and run the command when communicate is called
         self.terminalInstance = subprocess.Popen([command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell = True, cwd = self.currentDirectory)
