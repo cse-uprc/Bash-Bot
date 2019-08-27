@@ -17,6 +17,21 @@ import terminal
 import logger
 
 
+#####################
+# Global
+#####################
+
+with open("keys.json") as json_file:  
+    data = json.load(json_file)
+    TOKEN = data["discordKey"]
+
+logger = logger.Logger("app.log")
+client = commands.Bot(command_prefix = "!")
+
+# CREATE testTerminal for the bash and cwd commands
+testTerminal = terminal.Terminal("test1", "/bin/bash")
+
+
 ####################
 # Helper methods
 ####################
@@ -164,12 +179,20 @@ async def upload(ctx, *args:str):
         # Run and Log the command
         output = testTerminal.executeCommand(argsString)
         logger.log("Command executed {0}".format(argsString))
-
+        
+        # Check for empty output string
+        outStr = ("```{0}```".format(output["outputString"]) if
+            len(output["outputString"])>0 else "")
+        
+        errStr = ("```{0}```".format(output["errorString"]) if
+            len(output["errorString"])>0 else "")
+ 
+        # Build message
         msg = (
             "Terminal: {0} \n".format(output["terminalName"])
             + "Current Dir: {0} \n".format(output["currentDirectory"])
-            + "Output: {0} \n".format(output["outputString"])
-            + "Error: {0} \n".format(output["errorString"])
+            + "Output:{0}\n".format(outStr)
+            + "Error:{0}\n".format(errStr)
         )
         
         logger.log(msg)
@@ -227,17 +250,6 @@ async def shutdown(ctx):
 
     
 #####################
-# Global
+# Start the bot
 #####################
-
-with open("keys.json") as json_file:  
-    data = json.load(json_file)
-    TOKEN = data["discordKey"]
-
-logger = logger.Logger("app.log")
-client = commands.Bot(command_prefix = "!")
-
-# CREATE testTerminal for the bash and cwd commands
-testTerminal = terminal.Terminal("test1", "/bin/bash")
-
 client.run(TOKEN)
