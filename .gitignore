@@ -103,5 +103,6 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# Keys
+# Keys and event log
 keys.json
+app.log
